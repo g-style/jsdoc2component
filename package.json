@@ -1,6 +1,6 @@
 {
   "name": "jsdoc2component",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "Create ReactJS component (or any other) file from JSDoc annotation.",
   "main": "index.js",
   "keywords": [
@@ -15,7 +15,6 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^2.3.0",
-    "clear": "0.0.1",
     "clui": "^0.3.6",
     "doctrine": "^2.0.2",
     "ejs": "^2.5.7",
