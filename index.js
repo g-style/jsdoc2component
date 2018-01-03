@@ -7,13 +7,13 @@ const ejs = require('ejs')
 const options = require('minimist')(process.argv.slice(2))
 
 try {
-    const interfaceName = options['interface-name']
+    const interfaceName = options['interface']
 
     if (interfaceName === undefined) {
         throw new Error('Specify an interface name')
     }
 
-    const fileName = options['file-name']
+    const fileName = options['file']
     const filePath = `./${fileName}`
 
     if (fileName === undefined) {
@@ -71,7 +71,7 @@ try {
         }
     })
 
-    const templatePath = options['template-file'] || __dirname + '/bin/component.tpl'
+    const templatePath = options['template'] || __dirname + '/bin/example.tpl'
     const template = fs.readFileSync(templatePath, 'utf8')
     const content = ejs.render(template, { ...data, tags, interfaceName })
     

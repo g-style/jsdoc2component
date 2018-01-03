@@ -1,6 +1,6 @@
-**JSDoc2Component** is a CLI tool that parses JSDoc file and generates ouput file based on a [EJS](http://ejs.co/) template file.
+**JSDoc2Component** is a CLI tool that parses JSDoc file and generates ouput file based on a [EJS](http://ejs.co/) template.
 
-Very often we have to write routine code. It begins with JSDoc annotations:
+Often we have to write routine code. Usually it begins with JSDoc annotations.
 ```js
 /**
  * Some description of the model.
@@ -15,13 +15,14 @@ export interface IUser {
     // ... +10 more props
 }
 ```
-After we described a model we need to write a component for the model:
+After we described a model we need to write a component with handlers and so on based on the model:
+
 ```js
 import * as React from 'react';
 ...
 
 /**
- * Some prop interface
+ * Prop interface
  *
  * @prop {Function} onChange Event to change the IUser data.
  * @prop {IUser} value User.
@@ -60,7 +61,9 @@ export class UserForm extends React.Component<IProps, {}>
         const {value: {
             firstName,
             lastName,
+
             // ... +10 more props
+
         }} = this.props;
         
         return (
@@ -73,7 +76,9 @@ export class UserForm extends React.Component<IProps, {}>
                     Last name:
                     <input type="text" value={lastName} onChange={this.handleLastNameChange} />
                 </label>
+
                 // ... +10 more fields
+
                 <input type="submit" value="Submit" />
             </form>
         );
@@ -81,8 +86,10 @@ export class UserForm extends React.Component<IProps, {}>
 }
 
 ```
-And if you use i18n you need to write something like this:
-```json
+
+And if you use i18n you need to write something like this in your i18n-json file:
+
+```js
 "PersonalForm": {
     "firstName": {
         "label": "First name",
@@ -93,12 +100,13 @@ And if you use i18n you need to write something like this:
         "placeholder": "Enter your last name please"
     }
     
-    ... +10 more fields
+    // ... +10 more fields
     
 }
 ```
 
-JSDoc2Component helps you to generate component, json file or anything other file type based on JSDoc annotation and EJS template file. All you need is write an EJS template file and specify the name of an interface name in the JSDoc file.
+**JSDoc2Component** helps you generate a component, handlers, json file or any other files based on EJS template.
+All you need is write an EJS template file and specify the name of an interface in the JSDoc model-file.
 
 ### Installation
 
@@ -109,13 +117,14 @@ $ npm install jsdoc2component -g
 
 #### How to use
 CLI Usage:
+Imagine we have an interface IUser (see example above) and you need to generate a component like in the above example.
 ```sh
 $ jsdoc2component --file-name fileWithJSDoc.js --interface-name IUser
 ```
 
 Options:
 | Option | Description |
-| ----------- | ----------- |
+| ------ | ----------- |
 | --jsdoc-file | path to the JSDoc model file |
 | --interface | name of the interface to use | 
 | --template | path to the template (ejs) file | 
