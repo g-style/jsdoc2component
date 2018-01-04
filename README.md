@@ -130,13 +130,14 @@ export class UserForm extends React.Component<IProps, {}>
 ```
 Now every time you need a component you just run **JSDoc2Component**:
 ```sh
-$ jsdoc2component --file modelWithJSDoc.js --interface IUser
+$ jsdoc2component --file jsdocfile.ts --interface IUser --destination UserComponent.tsx
 ```
 And you get ready to use component... just like that. Specify any correct interface name in your modelWithJSDoc.ts file and get ready to use component.
 
 ## Options:
 | Option | Description |
 | --- | --- |
-| --jsdoc-file | path to the JSDoc model file |
-| --interface | name of the interface to use | 
-| --template | path to the template (ejs) file | 
+| --file | path to the file with JSDoc models |
+| --interface | name of the interface to parse | 
+| --destination | ouput file name | 
+| --i18n | ouputs json i18n object | 
