@@ -1,6 +1,6 @@
 {
   "name": "jsdoc2component",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Create ReactJS component (or any other) file from JSDoc annotation.",
   "main": "index.js",
   "keywords": [

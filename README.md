@@ -1,28 +1,25 @@
-**JSDoc2Component** is a CLI tool that parses JSDoc file and generates ouput file based on a [EJS](http://ejs.co/) template.
+**JSDoc2Component** is a CLI tool that parses JSDoc annotation and generates ouput file based on [EJS](http://ejs.co/) template file.
 
-Often we have to write routine code. Usually it begins with JSDoc annotations.
-```js
+Imagine you have an interface described with JSDoc annotation:
+```typescript
 /**
- * Some description of the model.
+ * User.
  *
- * @prop {string} firstName First name.
- * @prop {string} lastName Last name.
- * ... +10 more props
+ * @prop {string} firstname First name.
  */
 export interface IUser {
-    firstName: string;
-    lastName: string;
-    // ... +10 more props
+    firstname: string;
 }
 ```
-After we described a model we need to write a component with handlers and so on based on the model:
+Now we need to build a component with form in it based on the interface above (common use case):
 
-```js
+```javascript
 import * as React from 'react';
-...
+
+// ... more imports, handlers, variables and so on...
 
 /**
- * Prop interface
+ * Props interface
  *
  * @prop {Function} onChange Event to change the IUser data.
  * @prop {IUser} value User.
@@ -33,98 +30,113 @@ interface IProps {
 }
 
 /**
- * Some description of the component
+ * User profile form.
  */
 export class UserForm extends React.Component<IProps, {}>
 {
     /**
-     * Handle firstName change
+     * Handle first name change.
      *
-     * @param {string} firstName First name
+     * @param {string} firstname First name
      */
-    handleFirstNameChange = (firstName: string) => {
-        this.updateForm({firstName})
+    handleFirstnameChange = (firstname: string) => {
+        // Some code to handle first name change...
     }
     
     /**
-     * Handle lastName change
+     * Handle form submit event.
      *
-     * @param {string} lastName First name
+     * @param {React.SyntheticEvent} event Event object
      */
-    handleFirstNameChange = (lastName: string) => {
-        this.updateForm({lastName})
+    handleSubmit = (event: React.SyntheticEvent) => {
+        // Some code to handle form submit...
     }
     
-    // ... +10 more handlers
-    
     render() {
-        const {value: {
-            firstName,
-            lastName,
-
-            // ... +10 more props
-
-        }} = this.props;
+        const {value: {firstname}} = this.props;
         
         return (
             <form onSubmit={this.handleSubmit}>
                 <label>
                     First name:
-                    <input type="text" value={firstName} onChange={this.handleFirstNameChange} />
+                    <input type="text" value={firstname} onChange={this.handleFirstnameChange} />
                 </label>
-                <label>
-                    Last name:
-                    <input type="text" value={lastName} onChange={this.handleLastNameChange} />
-                </label>
-
-                // ... +10 more fields
-
                 <input type="submit" value="Submit" />
             </form>
         );
     }
 }
-
 ```
+This example demonstrates that if you even have only one prop in your interface you need to write about 50 lines of *routine* code to create a form component based on the interface. The example is very simple but in real life we have tonns of interfaces with 10 or more props. So every time you need to create another component you copy existed file and change variable names, handlers and so on. It's routine, it's boring and it takes time.
+With **JSDoc2Component** we can escape all this routine work. All you need is write an EJS template file like this:
 
-And if you use i18n you need to write something like this in your i18n-json file:
+```twig
+import * as React from 'react';
 
-```js
-"PersonalForm": {
-    "firstName": {
-        "label": "First name",
-        "placeholder": "Enter your first name please"
-    },
-    "lastName": {
-        "label": "Last name",
-        "placeholder": "Enter your last name please"
+// ... more imports, handlers, variables and so on...
+
+/**
+ * Props interface
+ *
+ * @prop {Function} onChange Event to change the IUser data.
+ * @prop {IUser} value User.
+ */
+interface IProps {
+    onChange: (data: IUser) => void;
+    value: IUser;
+}
+
+/**
+ * <%- description %>
+ */
+export class UserForm extends React.Component<IProps, {}>
+{
+    <% tags.forEach(tag => ( %>
+        /**
+         * Handle <%- tag.name %> change.
+         *
+         * @param {<%- tag.type %>} <%- tag.name %> <%- tag.description %>
+         */
+        handle<%- tag.capitalizedName %>Change = (<%- tag.name %>: <%- tag.type %>) => {
+            // Some routine code to handle first name change...
+        }
+    <% )) %>
+    
+    /**
+     * Handle form submit event.
+     *
+     * @param {React.SyntheticEvent} event Event object
+     */
+    handleSubmit = (event: React.SyntheticEvent) => {
+        // Some code to handle form submit...
     }
     
-    // ... +10 more fields
-    
+    render() {
+        const {value: {firstname}} = this.props;
+        
+        return (
+            <form onSubmit={this.handleSubmit}>
+                <% tags.forEach(tag => ( %>
+                    <label>
+                        <%- tag.description %>:
+                        <input type="text" value={<%- tag.name %>} onChange={this.handle<%- tag.capitalizedName %>Change} />
+                    </label>
+                    <input type="submit" value="Submit" />
+                <% )) %>
+            </form>
+        );
+    }
 }
 ```
-
-**JSDoc2Component** helps you generate a component, handlers, json file or any other files based on EJS template.
-All you need is write an EJS template file and specify the name of an interface in the JSDoc model-file.
-
-### Installation
-
-JSDoc2Component requires [Node.js](https://nodejs.org/) v4+ to run.
+Now every time you need a component you just run **JSDoc2Component**:
 ```sh
-$ npm install jsdoc2component -g
+$ jsdoc2component --file modelWithJSDoc.js --interface IUser
 ```
+And you get ready to use component... just like that. Specify any correct interface name in your modelWithJSDoc.ts file and get ready to use component.
 
-#### How to use
-CLI Usage:
-Imagine we have an interface IUser (see example above) and you need to generate a component like in the above example.
-```sh
-$ jsdoc2component --file-name fileWithJSDoc.js --interface-name IUser
-```
-
-Options:
+## Options:
 | Option | Description |
-| ------ | ----------- |
+| --- | --- |
 | --jsdoc-file | path to the JSDoc model file |
 | --interface | name of the interface to use | 
 | --template | path to the template (ejs) file | 

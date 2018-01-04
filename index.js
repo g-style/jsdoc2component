@@ -73,28 +73,37 @@ try {
 
     const templatePath = options['template'] || __dirname + '/bin/example.tpl'
     const template = fs.readFileSync(templatePath, 'utf8')
-    const content = ejs.render(template, { ...data, tags, interfaceName })
+    const content = ejs.render(template, {
+        description: data.description,
+        props: tags,
+        interfaceName
+    })
     
-    const ouputFilePath = `./${interfaceName.slice(1)}Form.tsx`
+    const destination = options['destination'] || `./${interfaceName.slice(1)}Form.tsx`
     
-    fs.writeFileSync(ouputFilePath, content)
+    fs.writeFileSync(destination, content)
 
-    let i18n = tags.reduce((acc, tag) => {
-        acc += `
-            "${tag.name}": {
-                "label": "${tag.description.slice(0, -1)}",
-                "placeholder": "${tag.isEnum ? 'Укажите' : 'Введите'} ${tag.description.slice(0, -1).toLowerCase()}"
-            },
-        `
-        return acc
-    }, '')
+    console.log(chalk`{green {bold Completed.} File} {gray ${destination}} {green created}`)
 
-    console.log(chalk`{green {bold Completed.} File} {gray ${ouputFilePath}} {green created}`)
-    console.log(chalk`{blue
-        "${interfaceName.slice(3)}Form": \{
-        ${i18n}
-        \}
-    }`)
+    const i18n = options['i18n'] || false
+
+    if (i18n) {
+        let i18n = tags.reduce((acc, tag) => {
+            acc += `
+                "${tag.name}": {
+                    "label": "${tag.description.slice(0, -1)}",
+                    "placeholder": "${tag.isEnum ? 'Укажите' : 'Введите'} ${tag.description.slice(0, -1).toLowerCase()}"
+                },
+            `
+            return acc
+        }, '')
+        
+        console.log(chalk`{blue
+            "${interfaceName.slice(3)}Form": \{
+            ${i18n}
+            \}
+        }`)
+    }
 } catch (e) {
     console.log(chalk`{redBright ♻ ${e.message}.} {gray Type --help to get help.}`)
 }
